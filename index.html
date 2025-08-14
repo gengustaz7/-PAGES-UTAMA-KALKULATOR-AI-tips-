@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kalkulator Loan Kereta Malaysia (Percuma)</title>
+  <meta name="description" content="Kira ansuran bulanan loan kereta (hire purchase) + anggaran APR efektif. Siap AI tips bajet & DTI.">
+
+  <!-- (Opsyenal) Google Search Console verification -->
+  <!-- Gantikan CONTENT di bawah selepas anda dapat tag dari Search Console -->
+  <!-- <meta name="google-site-verification" content="TAMPAL_KOD_VERIFIKASI_DI_SINI" /> -->
+
+  <!-- (Nanti) AdSense Auto Ads code — ganti ca-pub-XXXXXXXXXXXXXXXX dengan ID anda -->
+  <!-- Dapatkan kod di AdSense > Ads > Get code dan tampal di sini. -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    :root { --bg:#0b1220; --card:#111a2b; --text:#eaf1ff; --muted:#9bb0d3; --brand:#3ea8ff; }
+    *{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:linear-gradient(180deg,#0b1220,#0a1326);color:var(--text)}
+    header{padding:24px 16px;text-align:center}
+    header h1{margin:0 0 6px;font-size:28px}
+    header p{margin:0;color:var(--muted)}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:880px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border:1px solid #20304b;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    label{display:flex;justify-content:space-between;align-items:center;margin:10px 0;color:#d9e6ff}
+    input,select{width:52%;padding:10px 12px;border-radius:10px;border:1px solid #2b3d5f;background:#0b1426;color:var(--text)}
+    .btns{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+    button{padding:10px 14px;border-radius:10px;border:1px solid #2b3d5f;background:#0c1d39;color:#fff;cursor:pointer}
+    button:hover{background:#0f2548}
+    .out h3{margin:8px 0 2px}
+    .big{font-size:28px;font-weight:700}
+    .muted{color:var(--muted)}
+    .faq details{background:#0b1426;border:1px solid #223454;border-radius:12px;padding:10px;margin:8px 0}
+    .tag{display:inline-block;padding:4px 8px;border:1px solid #2b3d5f;border-radius:999px;font-size:12px;color:#cfe2ff}
+    footer{opacity:.7;text-align:center;padding:30px 10px}
+    a{color:var(--brand)}
+  </style>
+
+  <!-- JSON-LD untuk SEO -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebApplication",
+    "name":"Kalkulator Loan Kereta Malaysia",
+    "applicationCategory":"FinanceApplication",
+    "operatingSystem":"Any",
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"MYR"}
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Kalkulator Loan Kereta (Malaysia)</h1>
+    <p>Flat rate &anggaran APR sebenar + AI tips bajet. Percuma.</p>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <div class="tag">Input</div>
+        <label>Harga kereta (RM)
+          <input type="number" id="price" value="80000" min="0" step="100"/>
+        </label>
+        <label>Deposit (RM)
+          <input type="number" id="deposit" value="8000" min="0" step="100"/>
+        </label>
+        <label>Trade-in (RM)
+          <input type="number" id="tradein" value="0" min="0" step="100"/>
+        </label>
+        <label>Yuran lain (insurans, caj, dll) (RM)
+          <input type="number" id="fees" value="0" min="0" step="50"/>
+        </label>
+        <label>Kadar faedah rata (% setahun)
+          <input type="number" id="flatRate" value="3.0" min="0" step="0.01"/>
+        </label>
+        <label>Tempoh (tahun)
+          <select id="years">
+            <option>5</option><option selected>7</option><option>9</option>
+          </select>
+        </label>
+        <label>Pendapatan bersih bulanan (RM) <span class="muted">(opsyenal)</span>
+          <input type="number" id="income" value="0" min="0" step="50"/>
+        </label>
+        <div class="btns">
+          <button id="calcBtn">Kira</button>
+          <button id="resetBtn">Reset</button>
+          <button id="shareBtn">Salin pautan</button>
+        </div>
+      </div>
+
+      <div class="card out">
+        <div class="tag">Keputusan</div>
+        <h3>Ansuran bulanan (flat)</h3>
+        <div class="big" id="monthly">RM 0</div>
+
+        <h3>Jumlah faedah (flat)</h3>
+        <div id="totalInterest" class="muted">RM 0</div>
+
+        <h3>Jumlah bayar keseluruhan</h3>
+        <div id="totalPay" class="muted">RM 0</div>
+
+        <h3>Anggaran APR efektif</h3>
+        <div id="apr" class="muted">~ 0% / tahun</div>
+
+        <h3>AI Tips (ikut bajet anda)</h3>
+        <ul id="aiTips"></ul>
+      </div>
+    </div>
+
+    <div class="card faq">
+      <div class="tag">FAQ ringkas</div>
+      <details>
+        <summary>Bezanya “flat rate” vs “APR efektif”?</summary>
+        <p>Loan kereta Malaysia biasa guna <em>flat rate</em> (faedah dikira ke atas prinsipal asal), jadi angka nampak rendah.
+        <em>APR efektif</em> lebih dekat realiti kerana kira faedah atas baki berkurang. Kalkulator ini anggarkan APR dengan
+        kaedah PV pembayaran bulanan.</p>
+      </details>
+      <details>
+        <summary>Berapa DTI yang sihat?</summary>
+        <p>Ramai pakar syorkan komitmen kereta ≤15% dari pendapatan bersih (maks 20% kalau perlu).
+        AI tips akan bantu beri cadangan ikut angka anda.</p>
+      </details>
+    </div>
+  </div>
+
+  <footer>
+    <a href="privacy.html">Privasi</a> · <a href="about.html">About</a> · © <span id="y"></span> Kalkulator Loan
+  </footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => "RM " + (Math.round(n*100)/100).toLocaleString("en-MY", {minimumFractionDigits:2});
+const urlParamsLoad = () => {
+  const p = new URLSearchParams(location.search);
+  ["price","deposit","tradein","fees","flatRate","income"].forEach(k=>{ if(p.get(k)) $(k).value = p.get(k); });
+  if(p.get("years")) $("years").value = p.get("years");
+};
+const shareLink = () => {
+  const p = new URLSearchParams();
+  ["price","deposit","tradein","fees","flatRate","income"].forEach(k=>p.set(k,$(k).value));
+  p.set("years",$("years").value);
+  navigator.clipboard.writeText(location.origin + location.pathname + "?" + p.toString())
+    .then(()=> alert("Pautan disalin!"))
+    .catch(()=> alert("Tak dapat salin automatik. Copy URL bar selepas tekan Kira."));
+};
+
+// Kira ansuran flat + anggar APR efektif (solve IRR bulanan)
+function compute(){
+  const price = +$("price").value||0;
+  const dep   = +$("deposit").value||0;
+  const trade = +$("tradein").value||0;
+  const fees  = +$("fees").value||0;
+  const flat  = (+$("flatRate").value||0)/100; // per annum
+  const years = +$("years").value||7;
+  const n = years*12;
+
+  let principal = price - dep - trade + fees;
+  if(principal < 0) principal = 0;
+
+  const totalInterest = principal * flat * years; // flat method
+  const totalPay = principal + totalInterest;
+  const monthly = totalPay / n;
+
+  // Bisection untuk cari r (monthly) supaya PV pembayaran = principal
+  function pv(r){
+    let s=0;
+    for(let i=1;i<=n;i++) s += monthly/Math.pow(1+r,i);
+    return s;
+  }
+  let lo=0, hi=0.1; // 0%..10% sebulan (hingga ~214% APR)
+  for(let k=0;k<80;k++){
+    const mid=(lo+hi)/2;
+    if(pv(mid)>principal) lo=mid; else hi=mid;
+  }
+  const rMonthly=(lo+hi)/2;
+  const apr = Math.pow(1+rMonthly,12)-1;
+
+  $("monthly").textContent = fmt(monthly);
+  $("totalInterest").textContent = fmt(totalInterest);
+  $("totalPay").textContent = fmt(totalPay);
+  $("apr").textContent = (apr*100).toFixed(2) + "% / tahun";
+
+  // AI tips ringkas (heuristik)
+  const income = +$("income").value||0;
+  const tips = [];
+  if(income>0){
+    const dti = monthly/income*100;
+    tips.push(`DTI kereta anda: ${dti.toFixed(1)}%.`);
+    if(dti>20) tips.push("Tinggi. Turunkan harga kereta / tambah deposit / lanjutkan tempoh (dengan risiko bayar faedah lebih).");
+    else if(dti>15) tips.push("Ok tapi ketat. Cuba tambah deposit 5–10% untuk lebih selesa.");
+    else tips.push("Sihat. Anda dalam zon selesa (<15%).");
+  } else {
+    tips.push("Masukkan pendapatan bulanan untuk dapatkan DTI & nasihat bajet.");
+  }
+  if(flat>=0.035) tips.push("Cuba minta kadar lebih rendah atau banding beberapa bank/dealer.");
+  if(rMonthly>0 && (Math.pow(1+rMonthly,12)-1) - flat > 0.05) tips.push("Ingat: APR efektif biasanya jauh lebih tinggi dari flat rate.");
+  $("aiTips").innerHTML = tips.map(t=>`<li>${t}</li>`).join("");
+}
+
+$("calcBtn").onclick = ()=>{ compute(); };
+$("resetBtn").onclick = ()=>{ ["price","deposit","tradein","fees","flatRate","income"].forEach(id=>$(id).value=0); $("price").value=80000; $("deposit").value=8000; $("flatRate").value=3.0; $("years").value=7; compute(); };
+$("shareBtn").onclick = ()=>{ shareLink(); };
+
+document.addEventListener("DOMContentLoaded", ()=>{ $("y").textContent = new Date().getFullYear(); urlParamsLoad(); compute(); });
+</script>
+</body>
+</html>
